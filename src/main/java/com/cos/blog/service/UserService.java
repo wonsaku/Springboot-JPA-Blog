@@ -27,8 +27,10 @@ public class UserService {
 
 	@Transactional
 	public void 회원가입(User user) {
+		System.out.println(user.getPassword());
 		user.setRole(RoleType.USER);
 		String encPassword = encoder.encode(user.getPassword());
+		System.out.println(encPassword);
 		user.setPassword(encPassword);
 		userRepository.save(user);
 	}
@@ -41,12 +43,26 @@ public class UserService {
 			return new IllegalArgumentException("회원찾기 실패");
 		});
 		
-		String rawPassword = requestUser.getPassword();
-		String encPassword = encoder.encode(rawPassword);
-		persistance.setPassword(encPassword);
-		persistance.setEmail(requestUser.getEmail());
+		//validation 체크
+		if(persistance.getOauth() == null || persistance.getOauth().equals("")) {
+			String rawPassword = requestUser.getPassword();
+			String encPassword = encoder.encode(rawPassword);
+			persistance.setPassword(encPassword);
+			persistance.setEmail(requestUser.getEmail());
+			
+		}
+	
 		//여기서 서비스가 종료되면서 영속성 컨텍스트 변경 감지(더티체킹), update날려줌 -> db로 커밋
 		
+	}
+
+	@Transactional(readOnly =  true)
+	public User 회원찾기(String username) {
+		
+		User user = userRepository.findByUsername(username).orElseGet(()->{
+			return new User();
+		});
+		return user;
 	}
 
 //	@Transactional(readOnly=true)
