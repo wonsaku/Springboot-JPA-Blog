@@ -32,9 +32,15 @@
 			                 // 생긴게 json이라면 javascript object로 변환
 			
 		}).done(function(resp){ //자바스크립트 object로 변환하여 resp 변수에 담아준다.
-			alert("회원가입이 완료되었습니다.");
-			console.log(resp);
-			location.href = "/";
+			if(resp.status === 500){
+				alert("회원가입에 실패하였습니다.");
+			} else{
+				alert("회원가입이 완료되었습니다.");
+				console.log(resp);
+				location.href = "/";
+			}
+			
+			
 		}).fail(function(error){
 			alert(JSON.stringify(error));
 		}); //ajax 통신 이용, 3개의 파라미터를 json으로 변경, insert 요청할꺼임
